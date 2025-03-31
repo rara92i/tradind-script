@@ -1,11 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export',
-  eslint: {
-    ignoreDuringBuilds: true,
+  experimental: {
+    serverActions: true, // Active les Server Actions pour Supabase
   },
-  
-  images: { unoptimized: true },
 };
 
 module.exports = nextConfig;
