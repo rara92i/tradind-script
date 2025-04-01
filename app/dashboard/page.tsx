@@ -22,22 +22,25 @@ export default function DashboardPage() {
   const { toast } = useToast();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const token = searchParams.get("token");
+
+  // Récupération des tokens dans l'URL
+  const accessToken = searchParams.get("access_token");
+  const refreshToken = searchParams.get("refresh_token");
 
   useEffect(() => {
     const checkAuth = async () => {
-      if (token) {
+      if (accessToken && refreshToken) {
         await supabase.auth.setSession({
-          access_token: token,
-          refresh_token: "",
+          access_token: accessToken,
+          refresh_token: refreshToken,
         });
+        router.replace("/dashboard"); // Nettoyer l’URL après authentification
       }
 
       const {
         data: { session },
         error,
       } = await supabase.auth.getSession();
-
       if (!session || error) {
         router.push("/login");
       } else {
@@ -46,7 +49,7 @@ export default function DashboardPage() {
     };
 
     checkAuth();
-  }, [token]);
+  }, [accessToken, refreshToken]);
 
   const fetchScripts = async () => {
     try {
