@@ -1,7 +1,7 @@
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { ChevronRight, Code2, Lock, Zap } from 'lucide-react';
-import Link from 'next/link';
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { ChevronRight, Code2, Lock, Zap } from "lucide-react";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -12,13 +12,14 @@ export default function Home() {
             Exclusive Pine Script Library
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Access a curated collection of professional TradingView indicators and strategies.
-            Sign up with just your email - no password needed!
+            Accédez à une sélection d'indicateurs et de stratégies
+            professionnelles TradingView. Inscrivez-vous simplement avec votre
+            adresse e-mail ; aucun mot de passe requis !
           </p>
           <div className="mt-8">
             <Button asChild size="lg">
               <Link href="/login">
-                Get Access Now <ChevronRight className="ml-2" />
+                Obtenez l'accès maintenant <ChevronRight className="ml-2" />
               </Link>
             </Button>
           </div>
@@ -29,23 +30,26 @@ export default function Home() {
             <Code2 className="w-12 h-12 mb-4 text-primary" />
             <h2 className="text-xl font-semibold mb-2">Premium Scripts</h2>
             <p className="text-muted-foreground">
-              Get access to professionally crafted Pine Script indicators and strategies.
+              Accédez à des indicateurs et stratégies Pine Script conçus par des
+              professionnels.
             </p>
           </Card>
 
           <Card className="p-6">
             <Lock className="w-12 h-12 mb-4 text-primary" />
-            <h2 className="text-xl font-semibold mb-2">Secure Access</h2>
+            <h2 className="text-xl font-semibold mb-2">Accès sécurisé</h2>
             <p className="text-muted-foreground">
-              Simple and secure login with just your email. No passwords to remember.
+              Connexion simple et sécurisée avec votre adresse e-mail. Aucun mot
+              de passe à retenir.
             </p>
           </Card>
 
           <Card className="p-6">
             <Zap className="w-12 h-12 mb-4 text-primary" />
-            <h2 className="text-xl font-semibold mb-2">Easy to Use</h2>
+            <h2 className="text-xl font-semibold mb-2">Facile à utiliser</h2>
             <p className="text-muted-foreground">
-              One-click copy functionality to easily use scripts in TradingView.
+              Fonctionnalité de copie en un clic pour utiliser facilement des
+              scripts dans TradingView.
             </p>
           </Card>
         </div>

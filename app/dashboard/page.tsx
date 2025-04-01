@@ -34,13 +34,16 @@ export default function DashboardPage() {
           access_token: accessToken,
           refresh_token: refreshToken,
         });
-        router.replace("/dashboard"); // Nettoyer l’URL après authentification
+
+        // Nettoyage de l'URL
+        router.replace("/dashboard");
       }
 
       const {
         data: { session },
         error,
       } = await supabase.auth.getSession();
+
       if (!session || error) {
         router.push("/login");
       } else {
