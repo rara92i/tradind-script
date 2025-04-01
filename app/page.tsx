@@ -14,7 +14,7 @@ export default function Home() {
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Accédez à une sélection d'indicateurs et de stratégies
             professionnelles TradingView. Inscrivez-vous simplement avec votre
-            adresse e-mail ; aucun mot de passe requis !
+            adresse e-mail; aucun mot de passe requis!
           </p>
           <div className="mt-8">
             <Button asChild size="lg">
