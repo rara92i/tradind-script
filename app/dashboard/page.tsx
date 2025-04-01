@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { useToast } from '@/hooks/use-toast';
-import { Copy, LogOut } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useEffect, useState } from "react";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { useToast } from "@/hooks/use-toast";
+import { Copy, LogOut } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 interface Script {
   id: string;
@@ -21,17 +21,39 @@ export default function DashboardPage() {
   const supabase = createClientComponentClient();
   const { toast } = useToast();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const token = searchParams.get("token");
 
   useEffect(() => {
-    fetchScripts();
-  }, []);
+    const checkAuth = async () => {
+      if (token) {
+        await supabase.auth.setSession({
+          access_token: token,
+          refresh_token: "",
+        });
+      }
+
+      const {
+        data: { session },
+        error,
+      } = await supabase.auth.getSession();
+
+      if (!session || error) {
+        router.push("/login");
+      } else {
+        fetchScripts();
+      }
+    };
+
+    checkAuth();
+  }, [token]);
 
   const fetchScripts = async () => {
     try {
       const { data, error } = await supabase
-        .from('scripts')
-        .select('*')
-        .order('created_at', { ascending: false });
+        .from("scripts")
+        .select("*")
+        .order("created_at", { ascending: false });
 
       if (error) throw error;
       setScripts(data || []);
@@ -64,7 +86,7 @@ export default function DashboardPage() {
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
-    router.push('/');
+    router.push("/");
   };
 
   if (loading) {
@@ -88,7 +110,9 @@ export default function DashboardPage() {
 
         {scripts.length === 0 ? (
           <Card className="p-8 text-center">
-            <p className="text-muted-foreground">Aucun script disponible pour le moment.</p>
+            <p className="text-muted-foreground">
+              Aucun script disponible pour le moment.
+            </p>
           </Card>
         ) : (
           <div className="grid gap-6 md:grid-cols-2">
@@ -97,7 +121,9 @@ export default function DashboardPage() {
                 <div className="flex justify-between items-start mb-4">
                   <div>
                     <h2 className="text-xl font-semibold">{script.title}</h2>
-                    <p className="text-muted-foreground mt-1">{script.description}</p>
+                    <p className="text-muted-foreground mt-1">
+                      {script.description}
+                    </p>
                   </div>
                   <Button
                     variant="outline"
@@ -108,7 +134,9 @@ export default function DashboardPage() {
                   </Button>
                 </div>
                 <pre className="bg-muted p-4 rounded-lg overflow-x-auto">
-                  <code className="text-sm">{script.code.slice(0, 100)}...</code>
+                  <code className="text-sm">
+                    {script.code.slice(0, 100)}...
+                  </code>
                 </pre>
               </Card>
             ))}
