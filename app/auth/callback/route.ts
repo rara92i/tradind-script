@@ -8,31 +8,20 @@ export async function GET(request: Request) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get("code");
 
-  if (!code) {
-    return NextResponse.redirect(new URL("/login?error=no_code", requestUrl.origin));
+  if (code) {
+    const supabase = createRouteHandlerClient({ cookies });
+    const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+
+    if (error || !data.session) {
+      return NextResponse.redirect(new URL("/login?error=auth_failed", requestUrl.origin));
+    }
+
+    // On récupère les tokens d'authentification
+    const { access_token, refresh_token } = data.session;
+
+    // On redirige vers le dashboard en transmettant les tokens
+    return NextResponse.redirect(new URL(/dashboard?access_token=${access_token}&refresh_token=${refresh_token}, requestUrl.origin));
   }
 
-  const supabase = createRouteHandlerClient({ cookies });
-  const { data, error } = await supabase.auth.exchangeCodeForSession(code);
-
-  if (error || !data.session) {
-    return NextResponse.redirect(new URL("/login?error=auth_failed", requestUrl.origin));
-  }
-
-  // 🔹 Vérification : Stocke les tokens en cookie pour assurer la persistance de la session
-  const response = NextResponse.redirect(new URL("/dashboard", requestUrl.origin));
-  response.cookies.set("sb-access-token", data.session.access_token, {
-    httpOnly: true,
-    secure: true,
-    sameSite: "Lax",
-    path: "/",
-  });
-  response.cookies.set("sb-refresh-token", data.session.refresh_token, {
-    httpOnly: true,
-    secure: true,
-    sameSite: "Lax",
-    path: "/",
-  });
-
-  return response;
+  return NextResponse.redirect(new URL("/login", requestUrl.origin));
 }
