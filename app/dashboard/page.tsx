@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Copy, LogOut } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 interface Script {
   id: string;
@@ -21,40 +21,8 @@ export default function DashboardPage() {
   const supabase = createClientComponentClient();
   const { toast } = useToast();
   const router = useRouter();
-  const searchParams = useSearchParams();
 
-  // Récupération des tokens dans l'URL
-  const accessToken = searchParams.get("access_token");
-  const refreshToken = searchParams.get("refresh_token");
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      if (accessToken && refreshToken) {
-        await supabase.auth.setSession({
-          access_token: accessToken,
-          refresh_token: refreshToken,
-        });
-
-        // Nettoyage de l'URL
-        router.replace("/dashboard");
-      }
-
-      const {
-        data: { session },
-        error,
-      } = await supabase.auth.getSession();
-
-      if (!session || error) {
-        router.push("/login");
-      } else {
-        fetchScripts();
-      }
-    };
-
-    checkAuth();
-  }, [accessToken, refreshToken]);
-
-  const fetchScripts = async () => {
+  const fetchScripts = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from("scripts")
@@ -72,7 +40,11 @@ export default function DashboardPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [supabase, toast]);
+
+  useEffect(() => {
+    fetchScripts();
+  }, [fetchScripts]);
 
   const handleCopyScript = async (code: string) => {
     try {
@@ -140,9 +112,7 @@ export default function DashboardPage() {
                   </Button>
                 </div>
                 <pre className="bg-muted p-4 rounded-lg overflow-x-auto">
-                  <code className="text-sm">
-                    {script.code.slice(0, 100)}...
-                  </code>
+                  <code className="text-sm">{script.code.slice(0, 100)}...</code>
                 </pre>
               </Card>
             ))}
