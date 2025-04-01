@@ -1,4 +1,4 @@
-"use server";
+ "use server";
 
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
@@ -10,17 +10,16 @@ export async function GET(request: Request) {
 
   if (code) {
     const supabase = createRouteHandlerClient({ cookies });
-    const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+    const { error } = await supabase.auth.exchangeCodeForSession(code);
 
-    if (error || !data.session) {
-      return NextResponse.redirect(new URL("/login?error=auth_failed", requestUrl.origin));
+    if (error) {
+      return NextResponse.redirect(
+        new URL("/login?error=auth_failed", requestUrl.origin)
+      );
     }
 
-    // On récupère les tokens d'authentification
-    const { access_token, refresh_token } = data.session;
-
-    // On redirige vers le dashboard en transmettant les tokens
-    return NextResponse.redirect(new URL(/dashboard?access_token=${access_token}&refresh_token=${refresh_token}, requestUrl.origin));
+    // La session est déjà gérée via les cookies, donc on redirige simplement vers le dashboard
+    return NextResponse.redirect(new URL("/dashboard", requestUrl.origin));
   }
 
   return NextResponse.redirect(new URL("/login", requestUrl.origin));
